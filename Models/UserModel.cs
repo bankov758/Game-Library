@@ -8,6 +8,14 @@ namespace Game_Library_2._0.Models
 {
     public class UserModel
     {
+        public int Id { get; set; }
+
+        public string Username { get; set; }
+
+        public string Email { get; set; }
+
+        public string Password { get; set; }
+
         public UserModel()
         {
             Id = -1;
@@ -20,16 +28,5 @@ namespace Game_Library_2._0.Models
             Email = email;
             Password = password;
         }
-
-        public int Id { get; set; }
-
-        [Required]
-        public string Username { get; set; }
-        [Required]
-        public string Email { get; set; }
-        [Required]
-        public string Password { get; set; }
-
-
     }
 }

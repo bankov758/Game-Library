@@ -14,6 +14,31 @@ namespace Game_Library_2._0.Data
         private string conntectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"Game Library\";" +
     "Integrated Security=True;Connect Timeout=30;Encrypt=False;";
 
+        public UserModel Fetch(string username)
+        {
+            using (SqlConnection connection = new SqlConnection(conntectionString))
+            {
+                string sqlQuery = " select * from Users where Username = @username ";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@username", System.Data.SqlDbType.NVarChar).Value = username;
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                UserModel model = null;
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        model = new UserModel();
+                        model.Id = reader.GetInt32(0);
+                        model.Username = reader.GetString(1);
+                        model.Password = reader.GetString(2);
+                        return model;
+                    }
+                }
+                return model;
+            }
+        }
+
         public int CreateOrUpdate(UserModel user)
         {
             string sqlQuery = "";
@@ -40,18 +65,17 @@ namespace Game_Library_2._0.Data
             }
         }
 
-        public UserModel SearchForName(string searchPhrase)
+        public List<UserModel> SearchForName(string searchPhrase)
         {
-            List<UserModel> gameModels = new List<UserModel>();
+            List<UserModel> userModels = new List<UserModel>();
 
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
-                string sqlQuery = " select * from Games where Username = @searchPhrase ";
+                string sqlQuery = " select * from Users where Username = @searchPhrase ";
                 SqlCommand command = new SqlCommand(sqlQuery, connection);
                 command.Parameters.Add("@searchPhrase", System.Data.SqlDbType.NVarChar).Value = searchPhrase;
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -59,12 +83,12 @@ namespace Game_Library_2._0.Data
                         UserModel model = new UserModel();
                         model.Id = reader.GetInt32(0);
                         model.Username = reader.GetString(1);
-                        model.Email = reader.GetString(1);
-                        gameModels.Add(model);
+                        model.Email = reader.GetString(2);
+                        userModels.Add(model);
                     }
                 }
             }
-            return gameModels.First();
+            return userModels;
         }
     }
 }

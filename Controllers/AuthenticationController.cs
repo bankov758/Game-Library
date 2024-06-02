@@ -6,90 +6,79 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 
 namespace Game_Library_2._0.Controllers
 {
     public class AuthenticationController : Controller
     {
-        // GET: Authentication
-        public ActionResult Index()
+        public ActionResult Login()
         {
-            return View();
+            return View("Login");
         }
 
-        // GET: Authentication/Details/5
-        public ActionResult Details(int id)
+        [HttpPost]
+        public ActionResult Login(LoginModel user)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                UserDAO userDAO = new UserDAO();
+                UserModel userToBeLogged = userDAO.Fetch(user.Username);
+                if (userToBeLogged != null && IsValidUser(user, userToBeLogged))
+                {
+                    Session["Username"] = user.Username;
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid username or password.");
+                }
+            }
+            return View("Login", user);
+
         }
 
-        // GET: Authentication/Create
         public ActionResult Register()
         {
             return View("Register");
         }
 
         [HttpPost]
-        public ActionResult Register(UserModel user)
+        public ActionResult Register(RegisterModel user)
         {
             if (ModelState.IsValid)
             {
                 UserDAO userDAO = new UserDAO();
-                userDAO.CreateOrUpdate(user);
-                Session["Username"] = user.Username;
-                return RedirectToAction("Index", "Home");
+                UserModel userModel = new UserModel();
+                userModel.Username = user.Username;
+                userModel.Password = user.Password;
+                userModel.Email = user.Email;
+                if (userDAO.Fetch(user.Username) != null)
+                {
+                    ModelState.AddModelError("", "That username is already taken.");
+                }
+                else
+                {
+                    userDAO.CreateOrUpdate(userModel);
+                    Session["Username"] = user.Username;
+                    return RedirectToAction("Index", "Home");
+                }
             }
             return View(user);
         }
 
-        private bool IsValidUser(string username, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        // GET: Authentication/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Authentication/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Logout()
         {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
 
-        // GET: Authentication/Delete/5
-        public ActionResult Delete(int id)
+        private bool IsValidUser(LoginModel userTryingToLogin, UserModel userFromDb)
         {
-            return View();
+            return Crypto.VerifyHashedPassword(userFromDb.Password, userTryingToLogin.Password);
         }
 
-        // POST: Authentication/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

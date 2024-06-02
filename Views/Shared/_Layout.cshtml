@@ -16,12 +16,14 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("My Games", "Index", "Games", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Search", "SearchForm", "Games", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Login", "SearchForm", "Games", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Register", "Register", "Authentication", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
+                @if (Session["Username"] != null)
+                {
+                    <ul class="navbar-nav flex-grow-1">
+                        <li>@Html.ActionLink("My Games", "Index", "Games", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Search", "SearchForm", "Games", new { area = "" }, new { @class = "nav-link" })</li>
+                    </ul>
+                }
+                @Html.Partial("_LoginPartial", new Game_Library_2._0.Models.UserModel())
             </div>
         </div>
     </nav>
