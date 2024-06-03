@@ -14,15 +14,16 @@ namespace Game_Library_2._0.Data
         private string conntectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"Game Library\";" +
             "Integrated Security=True;Connect Timeout=30;Encrypt=False;";
 
+        public string LoggedUsername { get; set; }
+
         public List<GameModel> FetchAll()
         {
             List<GameModel> gameModels = new List<GameModel>();
-
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
-                string sqlQuery = " select * from Games ";
+                string sqlQuery = " select * from Games where UserId = @UserId";
                 SqlCommand command = new SqlCommand(sqlQuery, connection);
-
+                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = getLoggedUserId(LoggedUsername);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
@@ -30,16 +31,7 @@ namespace Game_Library_2._0.Data
                 {
                     while (reader.Read())
                     {
-                        GameModel model = new GameModel();
-                        model.Id = reader.GetInt32(0);
-                        model.Name = reader.GetString(1);
-                        model.Description = reader.GetString(2);
-                        model.Completion = (float)reader.GetDecimal(3);
-                        model.Price = (float)reader.GetDecimal(4);
-                        model.Publisher = reader.GetString(5);
-                        model.PicturePath = reader.GetString(6);
-
-                        gameModels.Add(model);
+                        gameModels.Add(getGameModelFromSqlResult(reader));
                     }
                 }
             }
@@ -60,13 +52,7 @@ namespace Game_Library_2._0.Data
                 {
                     while (reader.Read())
                     {
-                        model.Id = reader.GetInt32(0);
-                        model.Name = reader.GetString(1);
-                        model.Description = reader.GetString(2);
-                        model.Completion = (float)reader.GetDecimal(3);
-                        model.Price = (float)reader.GetDecimal(4);
-                        model.Publisher = reader.GetString(5);
-                        model.PicturePath = reader.GetString(6);
+                        return getGameModelFromSqlResult(reader);
                     }
                 }
                 return model;
@@ -78,12 +64,12 @@ namespace Game_Library_2._0.Data
             string sqlQuery = "";
             if (gameModel.Id <= 0)
             {
-                sqlQuery = " insert into Games Values(@Name, @Description, @Completion, @Price, @Publisher, @PicturePath) ";
+                sqlQuery = " insert into Games Values(@Name, @Description, @Completion, @Price, @Publisher, @PicturePath, @UserId) ";
             }
             else
             {
                 sqlQuery = " update Games set Name = @Name, Description = @Description, Completion = @Completion, " +
-                    " Price = @Price, Publisher = @Publisher, PicturePath = @PicturePath where Id = @Id ";
+                    " Price = @Price, Publisher = @Publisher, PicturePath = @PicturePath, UserId = @UserId where Id = @Id ";
             }
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
@@ -98,6 +84,8 @@ namespace Game_Library_2._0.Data
                 command.Parameters.Add("@Price", System.Data.SqlDbType.Decimal).Value = gameModel.Price;
                 command.Parameters.Add("@Publisher", System.Data.SqlDbType.VarChar, 100).Value = gameModel.Publisher;
                 command.Parameters.Add("@PicturePath", System.Data.SqlDbType.VarChar, 40000).Value = gameModel.PicturePath;
+                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = getLoggedUserId(LoggedUsername); ;
+                Console.WriteLine(command.CommandText);
                 connection.Open();
                 return command.ExecuteNonQuery();
             }
@@ -118,7 +106,6 @@ namespace Game_Library_2._0.Data
         public List<GameModel> SearchForName(string searchPhrase)
         {
             List<GameModel> gameModels = new List<GameModel>();
-
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
                 string sqlQuery = " select * from Games where name like @searchPhrase ";
@@ -126,24 +113,33 @@ namespace Game_Library_2._0.Data
                 command.Parameters.Add("@searchPhrase", System.Data.SqlDbType.NVarChar).Value = "%" + searchPhrase + "%";
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-
                 if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
-                        GameModel model = new GameModel();
-                        model.Id = reader.GetInt32(0);
-                        model.Name = reader.GetString(1);
-                        model.Description = reader.GetString(2);
-                        model.Completion = (float)reader.GetDecimal(3);
-                        model.Price = (float)reader.GetDecimal(4);
-                        model.Publisher = reader.GetString(5);
-
-                        gameModels.Add(model);
+                        gameModels.Add(getGameModelFromSqlResult(reader));
                     }
                 }
             }
             return gameModels;
+        }
+
+        private GameModel getGameModelFromSqlResult(SqlDataReader reader)
+        {
+            GameModel model = new GameModel();
+            model.Id = reader.GetInt32(0);
+            model.Name = reader.GetString(1);
+            model.Description = reader.GetString(2);
+            model.Completion = (float)reader.GetDecimal(3);
+            model.Price = (float)reader.GetDecimal(4);
+            model.Publisher = reader.GetString(5);
+            model.PicturePath = reader.GetString(6);
+            return model;
+        }
+
+        private int getLoggedUserId(string loggedUsername) { 
+            UserDAO userDAO = new UserDAO();
+            return userDAO.Fetch(loggedUsername).Id;
         }
 
     }

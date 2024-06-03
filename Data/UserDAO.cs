@@ -14,6 +14,12 @@ namespace Game_Library_2._0.Data
         private string conntectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=\"Game Library\";" +
     "Integrated Security=True;Connect Timeout=30;Encrypt=False;";
 
+        public string LoggedUsername { get; set; }
+
+        public UserDAO() { }
+
+        public UserDAO(string loggedUsername) { LoggedUsername = loggedUsername; }
+
         public UserModel Fetch(string username)
         {
             using (SqlConnection connection = new SqlConnection(conntectionString))

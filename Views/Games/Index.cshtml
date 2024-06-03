@@ -15,10 +15,10 @@
         <div class="col-md-4">
             <div class="card text-white bg-dark mb-3" style="width: 18rem;">
                 <img src="@Url.Action("DisplayImage", "Games", new { picturePath = item.PicturePath })"
-                     alt="Image" class="card-img-top" />
+                     alt="Image" style="width: 18rem; height: 18rem; object-fit: fill; object-position: center; " class="card-img-top" />
                 <div class="card-body">
                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
-                    <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                    <p class="card-text">Description: @Html.DisplayFor(modelItem => item.Description)</p>
                     <p class="card-text">Completion: @Html.DisplayFor(modelItem => item.Completion)</p>
                     <p class="card-text">Price: @Html.DisplayFor(modelItem => item.Price)</p>
                     <p class="card-text">Publisher: @Html.DisplayFor(modelItem => item.Publisher)</p>

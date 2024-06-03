@@ -13,6 +13,9 @@ namespace Game_Library_2._0.Controllers
 {
     public class AuthenticationController : Controller
     {
+
+        private UserDAO userDAO = new UserDAO();
+
         public ActionResult Login()
         {
             return View("Login");
@@ -23,11 +26,11 @@ namespace Game_Library_2._0.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserDAO userDAO = new UserDAO();
                 UserModel userToBeLogged = userDAO.Fetch(user.Username);
                 if (userToBeLogged != null && IsValidUser(user, userToBeLogged))
                 {
                     Session["Username"] = user.Username;
+                    userDAO.LoggedUsername = user.Username;
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -49,7 +52,6 @@ namespace Game_Library_2._0.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserDAO userDAO = new UserDAO();
                 UserModel userModel = new UserModel();
                 userModel.Username = user.Username;
                 userModel.Password = user.Password;

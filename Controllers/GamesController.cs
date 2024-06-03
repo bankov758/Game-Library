@@ -11,16 +11,17 @@ namespace Game_Library_2._0.Controllers
 {
     public class GamesController : Controller
     {
+        private GameDAO gameDAO = new GameDAO();
 
         public ActionResult Index()
         {
-            GameDAO gameDAO = new GameDAO();
+            gameDAO.LoggedUsername = (string)Session["Username"];
             return View("Index", gameDAO.FetchAll());
         }
 
         public ActionResult Details(int id)
         {
-            GameDAO gameDAO = new GameDAO();
+            gameDAO.LoggedUsername = (string)Session["Username"];
             GameModel gameModel = gameDAO.Fetch(id);
             return View("Details", gameModel);
         }
@@ -32,10 +33,11 @@ namespace Game_Library_2._0.Controllers
 
         [HttpPost]
         public ActionResult ProcessCreate(GameModel gameModel)
-        { 
+        {
+            gameDAO.LoggedUsername = (string)Session["Username"];
+            var folderPath = Server.MapPath("~/App_Data/Pictures");
             if (gameModel.Picture != null)
             {
-                var folderPath = Server.MapPath("~/App_Data/Pictures");
                 var path = Path.Combine(folderPath, Path.GetFileName(gameModel.Picture.FileName));
                 if (!Directory.Exists(folderPath))
                 {
@@ -44,29 +46,30 @@ namespace Game_Library_2._0.Controllers
                 gameModel.Picture.SaveAs(path);
                 gameModel.PicturePath = path;
             }
-
-            GameDAO gameDAO = new GameDAO();
+            else if (gameModel.Id <= 0)
+            {
+                gameModel.PicturePath = Path.Combine(folderPath, Path.GetFileName("defaultImge.jpg"));
+            }
             gameDAO.CreateOrUpdate(gameModel);
             return View("Details", gameModel);
         }
 
         public ActionResult Edit(int id)
         {
-            GameDAO gameDAO = new GameDAO();
+            gameDAO.LoggedUsername = (string)Session["Username"];
             GameModel gameModel = gameDAO.Fetch(id);
             return View("GameForm", gameModel);
         }
 
-        [HttpDelete]
         public ActionResult Delete(int id)
         {
-            GameDAO gameDAO = new GameDAO();
+            gameDAO.LoggedUsername = (string)Session["Username"];
             gameDAO.Delete(id);
             return View("Index", gameDAO.FetchAll());
         }
 
         public ActionResult DisplayImage(string picturePath)
-        {  
+        {
             return File(picturePath, "image/jpg");
         }
 
@@ -77,7 +80,7 @@ namespace Game_Library_2._0.Controllers
 
         public ActionResult SearchForName(string searchPhrase)
         {
-            GameDAO gameDAO = new GameDAO();
+            gameDAO.LoggedUsername = (string)Session["Username"];
             return View("Index", gameDAO.SearchForName(searchPhrase));
         }
 
