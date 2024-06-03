@@ -84,7 +84,7 @@ namespace Game_Library_2._0.Data
                 command.Parameters.Add("@Price", System.Data.SqlDbType.Decimal).Value = gameModel.Price;
                 command.Parameters.Add("@Publisher", System.Data.SqlDbType.VarChar, 100).Value = gameModel.Publisher;
                 command.Parameters.Add("@PicturePath", System.Data.SqlDbType.VarChar, 40000).Value = gameModel.PicturePath;
-                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = getLoggedUserId(LoggedUsername); ;
+                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = getLoggedUserId(LoggedUsername);
                 Console.WriteLine(command.CommandText);
                 connection.Open();
                 return command.ExecuteNonQuery();
@@ -103,14 +103,26 @@ namespace Game_Library_2._0.Data
             }
         }
 
-        public List<GameModel> SearchForName(string searchPhrase)
+        public List<GameModel> Search(GameSearchModel searchModel)
         {
             List<GameModel> gameModels = new List<GameModel>();
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
-                string sqlQuery = " select * from Games where name like @searchPhrase ";
+                string sqlQuery = BuildSearchQuery(searchModel);
                 SqlCommand command = new SqlCommand(sqlQuery, connection);
-                command.Parameters.Add("@searchPhrase", System.Data.SqlDbType.NVarChar).Value = "%" + searchPhrase + "%";
+                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = getLoggedUserId(LoggedUsername);
+                if (searchModel.Name != null)
+                {
+                    command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar).Value = "%" + searchModel.Name + "%";
+                }
+                if (searchModel.Publisher != null)
+                {
+                    command.Parameters.Add("@Publisher", System.Data.SqlDbType.NVarChar).Value = "%" + searchModel.Publisher + "%";
+                }
+                if (searchModel.Price != 0)
+                {
+                    command.Parameters.Add("@Price", System.Data.SqlDbType.Decimal).Value = searchModel.Price;
+                }
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.HasRows)
@@ -122,6 +134,24 @@ namespace Game_Library_2._0.Data
                 }
             }
             return gameModels;
+        }
+
+        private string BuildSearchQuery(GameSearchModel searchModel)
+        {
+            string sqlQuery = " select * from Games where UserId = @UserId ";
+            if (searchModel.Name != null)
+            {
+                sqlQuery += " and Name like @Name ";
+            }
+            if (searchModel.Publisher != null)
+            {
+                sqlQuery += " and Publisher like @Publisher ";
+            }
+            if (searchModel.Price != 0)
+            {
+                sqlQuery += " and Price " + searchModel.Operator + " @Price ";
+            }
+            return sqlQuery;
         }
 
         private GameModel getGameModelFromSqlResult(SqlDataReader reader)
@@ -137,7 +167,8 @@ namespace Game_Library_2._0.Data
             return model;
         }
 
-        private int getLoggedUserId(string loggedUsername) { 
+        private int getLoggedUserId(string loggedUsername)
+        {
             UserDAO userDAO = new UserDAO();
             return userDAO.Fetch(loggedUsername).Id;
         }

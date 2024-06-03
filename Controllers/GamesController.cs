@@ -78,10 +78,10 @@ namespace Game_Library_2._0.Controllers
             return View("SearchForm");
         }
 
-        public ActionResult SearchForName(string searchPhrase)
+        public ActionResult SearchForName(GameSearchModel gameSearchModel)
         {
             gameDAO.LoggedUsername = (string)Session["Username"];
-            return View("Index", gameDAO.SearchForName(searchPhrase));
+            return View("Index", gameDAO.Search(gameSearchModel));
         }
 
     }

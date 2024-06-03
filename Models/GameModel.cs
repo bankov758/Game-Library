@@ -16,9 +16,9 @@ namespace Game_Library_2._0.Models
         [Required]
         public string Description { get; set; }
         [Required]
-        public float Completion { get; set; }
+        public double Completion { get; set; }
         [Required]
-        public float Price { get; set; }
+        public double Price { get; set; }
         [Required]
         public string Publisher { get; set; }
         public string PicturePath { get; set; }
@@ -29,8 +29,8 @@ namespace Game_Library_2._0.Models
             Id = -1;
             Name = "Game Name";
             Description = "Description";
-            Completion = 0.0f;
-            Price = 0.00f;
+            Completion = 0.0;
+            Price = 0.00;
             Publisher = "Publisher";
             PicturePath = "";
         }
