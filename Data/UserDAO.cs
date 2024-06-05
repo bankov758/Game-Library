@@ -1,4 +1,5 @@
 ﻿using Game_Library_2._0.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -43,6 +44,23 @@ namespace Game_Library_2._0.Data
                 }
                 return model;
             }
+        }
+
+        public UserProfileModel FetchUserProfile(string username)
+        {
+            UserModel userModel = Fetch(username);
+            GameDAO gameDAO = new GameDAO();
+            gameDAO.LoggedUsername = username;
+            List<GameModel> userGames = gameDAO.FetchAll();
+            double moneySpent = 0;
+            double avgCompletion = 0;
+            foreach (GameModel gameModel in userGames)
+            {
+                moneySpent += gameModel.Price;
+                avgCompletion += gameModel.Completion;
+            }
+            avgCompletion = Math.Round(avgCompletion / userGames.Count, 2);
+            return new UserProfileModel(userModel.Username, userModel.Email, moneySpent, avgCompletion, userGames);
         }
 
         public int CreateOrUpdate(UserModel user)

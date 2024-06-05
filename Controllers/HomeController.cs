@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Game_Library_2._0.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,6 +11,10 @@ namespace Game_Library_2._0.Controllers
     {
         public ActionResult Index()
         {
+            if (Session["Username"] != null) { 
+                UserDAO userDAO = new UserDAO();
+                return View("UserProfile", userDAO.FetchUserProfile((string)Session["Username"]));
+            }
             return View();
         }
 
