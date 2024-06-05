@@ -6,12 +6,15 @@
     {
         @Html.AntiForgeryToken()
 
-        <ul class="navbar-nav navbar-right">
-            <li>
-                @Html.ActionLink("Hello " + Session["Username"] + " !", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
-            </li>
-            <li><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">Logout</a></li>
-        </ul>
+<ul class="navbar-nav navbar-right">
+    <li>
+        @Html.ActionLink("Add Friend", "SearchForm", "User", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
+    </li>
+    <li>
+        @Html.ActionLink("Friend List", "Friends", "User", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
+    </li>
+    <li><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">Logout</a></li>
+</ul>
     }
 }
 else

@@ -25,7 +25,7 @@ namespace Game_Library_2._0.Data
         {
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
-                string sqlQuery = " select * from Users where Username = @username ";
+                string sqlQuery = " select Id, Username, Email, Password from Users where Username = @username ";
                 SqlCommand command = new SqlCommand(sqlQuery, connection);
                 command.Parameters.Add("@username", System.Data.SqlDbType.NVarChar).Value = username;
                 connection.Open();
@@ -38,7 +38,8 @@ namespace Game_Library_2._0.Data
                         model = new UserModel();
                         model.Id = reader.GetInt32(0);
                         model.Username = reader.GetString(1);
-                        model.Password = reader.GetString(2);
+                        model.Email = reader.GetString(2);
+                        model.Password = reader.GetString(3);
                         return model;
                     }
                 }
@@ -46,11 +47,42 @@ namespace Game_Library_2._0.Data
             }
         }
 
+        public List<UserProfileModel> FetchFriends()
+        {
+            using (SqlConnection connection = new SqlConnection(conntectionString))
+            {
+                string sqlQuery = " select Id, Username, Email, Password from Users where Id in (select FriendId from Friends where UserId = @Id) ";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = Fetch(LoggedUsername).Id; ;
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                
+                List<UserProfileModel> friends = new List<UserProfileModel>();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        UserModel model = new UserModel();
+                        model.Id = reader.GetInt32(0);
+                        model.Username = reader.GetString(1);
+                        model.Email = reader.GetString(2);
+                        model.Password = reader.GetString(3);
+                        friends.Add(geUserProfileFromtUserModel(model));
+                    }
+                }
+                return friends;
+            }
+        }
+
         public UserProfileModel FetchUserProfile(string username)
         {
             UserModel userModel = Fetch(username);
+            return geUserProfileFromtUserModel(userModel);
+        }
+
+        private UserProfileModel geUserProfileFromtUserModel(UserModel userModel) {
             GameDAO gameDAO = new GameDAO();
-            gameDAO.LoggedUsername = username;
+            gameDAO.LoggedUsername = userModel.Username;
             List<GameModel> userGames = gameDAO.FetchAll();
             double moneySpent = 0;
             double avgCompletion = 0;
@@ -60,7 +92,7 @@ namespace Game_Library_2._0.Data
                 avgCompletion += gameModel.Completion;
             }
             avgCompletion = Math.Round(avgCompletion / userGames.Count, 2);
-            return new UserProfileModel(userModel.Username, userModel.Email, moneySpent, avgCompletion, userGames);
+            return new UserProfileModel(userModel.Id, userModel.Username, userModel.Email, Math.Round(moneySpent, 2), avgCompletion, userGames);
         }
 
         public int CreateOrUpdate(UserModel user)
@@ -89,15 +121,18 @@ namespace Game_Library_2._0.Data
             }
         }
 
-        public List<UserModel> SearchForName(string searchPhrase)
+        public List<UserModel> SearchUsername(string searchUsername)
         {
             List<UserModel> userModels = new List<UserModel>();
 
             using (SqlConnection connection = new SqlConnection(conntectionString))
             {
-                string sqlQuery = " select * from Users where Username = @searchPhrase ";
+                string sqlQuery = " select Id, Username, Email from Users where Username like @searchUsername " +
+                    " and Username != @loggedUsername and Id not in (select FriendId from Friends where UserId = @Id)";
                 SqlCommand command = new SqlCommand(sqlQuery, connection);
-                command.Parameters.Add("@searchPhrase", System.Data.SqlDbType.NVarChar).Value = searchPhrase;
+                command.Parameters.Add("@searchUsername", System.Data.SqlDbType.NVarChar).Value = "%" + searchUsername + "%";
+                command.Parameters.Add("@loggedUsername", System.Data.SqlDbType.NVarChar).Value = LoggedUsername;
+                command.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = Fetch(LoggedUsername).Id;
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.HasRows)
@@ -114,5 +149,31 @@ namespace Game_Library_2._0.Data
             }
             return userModels;
         }
+
+        public void addFriend(int friendId) { 
+            using (SqlConnection connection = new SqlConnection(conntectionString))
+            {
+                string sqlQuery = " insert into Friends Values(@UserId, @FriendId) ";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = Fetch(LoggedUsername).Id;
+                command.Parameters.Add("@FriendId", System.Data.SqlDbType.Int).Value = friendId;
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void RemoveFriend(int friendId)
+        {
+            using (SqlConnection connection = new SqlConnection(conntectionString))
+            {
+                string sqlQuery = " delete from Friends where UserId = @UserId and FriendId = @FriendId ";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@UserId", System.Data.SqlDbType.Int).Value = Fetch(LoggedUsername).Id;
+                command.Parameters.Add("@FriendId", System.Data.SqlDbType.Int).Value = friendId;
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
     }
 }

@@ -7,15 +7,18 @@ namespace Game_Library_2._0.Models
 {
     public class UserProfileModel
     {
-        public UserProfileModel(string username, string email, double moneySpent,
+        public UserProfileModel(int id, string username, string email, double moneySpent,
             double averageCompletion, List<GameModel> games)
         {
+            Id = id;
             Username = username;
             Email = email;
             MoneySpent = moneySpent;
             AverageCompletion = averageCompletion;
             Games = games;
         }
+
+        public int Id { get; set; }
 
         public string Username { get; set; }
 

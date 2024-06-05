@@ -198,10 +198,13 @@
     <Content Include="Views\Authentication\Login.cshtml" />
     <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\Home\ListGamesPartial.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\User\Friends.cshtml" />
+    <Content Include="Views\User\NotFriends.cshtml" />
+    <Content Include="Views\User\FriendSearchForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Pictures\" />
-    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
