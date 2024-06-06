@@ -47,3 +47,4 @@ Additionally, users can connect with friends, compare gaming statistics, and sha
 5. **Run the application**: Start the application in Visual Studio to launch the web server.
 
 ## Database
+![database](https://github.com/bankov758/Game-Library/assets/74242831/f09e705e-698d-4b70-aa77-24c0af25244f)
