@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Game_Library_2._0.Models.UserProfileModel>
+
+@{
+    ViewBag.Title = "Comparison";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align: center;">Who is the bigger gamer ?</h2>
+
+@if (Model.Count() >= 2)
+{
+    Game_Library_2._0.Models.UserProfileModel firstUser = Model.ElementAt(0);
+    Game_Library_2._0.Models.UserProfileModel secondUser = Model.ElementAt(1);
+
+    string gamesStyleFirst = GetColor(firstUser.Games.Count, secondUser.Games.Count);
+    string gamesStyleSecond = GetColor(secondUser.Games.Count, firstUser.Games.Count);
+    string moneySpentStyleFirst = GetColor(firstUser.MoneySpent, secondUser.MoneySpent);
+    string moneySpentStyleSecond = GetColor(secondUser.MoneySpent, firstUser.MoneySpent);
+    string avgCompletionStyleFirst = GetColor(firstUser.AverageCompletion, secondUser.AverageCompletion);
+    string avgCompletionStyleSecond = GetColor(secondUser.AverageCompletion, firstUser.AverageCompletion);
+
+    <div class="row">
+        <div class="col-md-6">
+            <h4>@Html.DisplayFor(firstModel => Model.ElementAt(0).Username)</h4>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>@Html.DisplayNameFor(firstModel => firstModel.Games)</dt>
+                <dd style="@gamesStyleFirst">@Html.DisplayFor(firstModel => Model.ElementAt(0).Games.Count)</dd>
+
+                <dt>@Html.DisplayNameFor(firstModel => firstModel.MoneySpent)</dt>
+                <dd style="@moneySpentStyleFirst">@Html.DisplayFor(firstModel => Model.ElementAt(0).MoneySpent)</dd>
+
+                <dt>@Html.DisplayNameFor(firstModel => firstModel.AverageCompletion)</dt>
+                <dd style="@avgCompletionStyleFirst">@Html.DisplayFor(firstModel => Model.ElementAt(0).AverageCompletion)</dd>
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <h4>@Html.DisplayFor(secondModel => Model.ElementAt(1).Username)</h4>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>@Html.DisplayNameFor(firstModel => firstModel.Games)</dt>
+                <dd style="@gamesStyleSecond">@Html.DisplayFor(firstModel => Model.ElementAt(1).Games.Count)</dd>
+
+                <dt>@Html.DisplayNameFor(secondModel => secondModel.MoneySpent)</dt>
+                <dd style="@moneySpentStyleSecond">@Html.DisplayFor(secondModel => secondModel.ElementAt(1).MoneySpent)</dd>
+
+                <dt>@Html.DisplayNameFor(secondModel => secondModel.AverageCompletion)</dt>
+                <dd style="@avgCompletionStyleSecond">@Html.DisplayFor(secondModel => secondModel.ElementAt(1).AverageCompletion)</dd>
+            </dl>
+        </div>
+    </div>
+    <p style="text-align: center;">@GetWinner(Model.ElementAt(0), Model.ElementAt(1))</p>
+}
+else
+{
+    <p>Insufficient data to display a comparison. At least two user profiles are required.</p>
+}
+
+@functions {
+    private string GetColor(double value1, double value2)
+    {
+        if (value1 > value2)
+            return "background-color:lightgreen";
+        else if (value1 < value2)
+            return "background-color:pink";
+        else
+            return "background-color:yellow";
+    }
+}
+
+@functions {
+    private string GetWinner(Game_Library_2._0.Models.UserProfileModel value1,
+        Game_Library_2._0.Models.UserProfileModel value2)
+    {
+        int value1Points = 0;
+        int value2Points = 0;
+
+        if (value1.AverageCompletion > value2.AverageCompletion)
+            value1Points++;
+        else if (value1.AverageCompletion < value2.AverageCompletion)
+            value2Points++;
+
+        if (value1.MoneySpent > value2.MoneySpent)
+            value1Points++;
+        else if (value1.MoneySpent < value2.MoneySpent)
+            value2Points++;
+
+        if (value1.Games.Count > value2.Games.Count)
+            value1Points++;
+        else if (value1.Games.Count < value2.Games.Count)
+            value2Points++;
+
+        if (value1Points > value2Points)
+            return value1.Username + " is the bigger gamer !";
+        else if (value1Points < value2Points)
+            return value2.Username + " is the bigger gamer !";
+        else
+            return "You are equals";
+    }
+}

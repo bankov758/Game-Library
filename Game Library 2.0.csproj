@@ -202,6 +202,7 @@
     <Content Include="Views\User\Friends.cshtml" />
     <Content Include="Views\User\NotFriends.cshtml" />
     <Content Include="Views\User\FriendSearchForm.cshtml" />
+    <Content Include="Views\User\Comparison.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Pictures\" />

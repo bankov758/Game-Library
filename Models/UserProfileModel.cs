@@ -30,6 +30,5 @@ namespace Game_Library_2._0.Models
 
         public List<GameModel> Games { get; set; }
 
-
     }
 }

@@ -47,6 +47,32 @@ namespace Game_Library_2._0.Data
             }
         }
 
+        public UserModel Fetch(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(conntectionString))
+            {
+                string sqlQuery = " select Id, Username, Email, Password from Users where Id = @Id ";
+                SqlCommand command = new SqlCommand(sqlQuery, connection);
+                command.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = id;
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                UserModel model = null;
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        model = new UserModel();
+                        model.Id = reader.GetInt32(0);
+                        model.Username = reader.GetString(1);
+                        model.Email = reader.GetString(2);
+                        model.Password = reader.GetString(3);
+                        return model;
+                    }
+                }
+                return model;
+            }
+        }
+
         public List<UserProfileModel> FetchFriends()
         {
             using (SqlConnection connection = new SqlConnection(conntectionString))
@@ -77,6 +103,12 @@ namespace Game_Library_2._0.Data
         public UserProfileModel FetchUserProfile(string username)
         {
             UserModel userModel = Fetch(username);
+            return geUserProfileFromtUserModel(userModel);
+        }
+
+        public UserProfileModel FetchUserProfile(int id)
+        {
+            UserModel userModel = Fetch(id);
             return geUserProfileFromtUserModel(userModel);
         }
 

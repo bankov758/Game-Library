@@ -44,5 +44,16 @@ namespace Game_Library_2._0.Controllers
             usersDAO.RemoveFriend(id);
             return View("Friends", usersDAO.FetchFriends());
         }
+
+        public ActionResult Compare(int id)
+        {
+            UserDAO usersDAO = new UserDAO();
+            usersDAO.LoggedUsername = (string)Session["Username"];
+            List<UserProfileModel> comparedUsers = new List<UserProfileModel>();
+            comparedUsers.Add(usersDAO.FetchUserProfile(usersDAO.LoggedUsername));
+            comparedUsers.Add(usersDAO.FetchUserProfile(id));
+            return View("Comparison", comparedUsers);
+        }
+
     }
 }
