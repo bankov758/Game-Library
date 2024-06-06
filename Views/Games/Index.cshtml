@@ -19,8 +19,8 @@
                 <div class="card-body">
                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
                     <p class="card-text">Description: @Html.DisplayFor(modelItem => item.Description)</p>
-                    <p class="card-text">Completion: @Html.DisplayFor(modelItem => item.Completion)</p>
-                    <p class="card-text">Price: @Html.DisplayFor(modelItem => item.Price)</p>
+                    <p class="card-text">Completion: @Html.DisplayFor(modelItem => item.Completion)%</p>
+                    <p class="card-text">Price: @Html.DisplayFor(modelItem => item.Price)$</p>
                     <p class="card-text">Publisher: @Html.DisplayFor(modelItem => item.Publisher)</p>
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-secondary" })
                     @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-info" })

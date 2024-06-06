@@ -160,8 +160,8 @@ namespace Game_Library_2._0.Data
             model.Id = reader.GetInt32(0);
             model.Name = reader.GetString(1);
             model.Description = reader.GetString(2);
-            model.Completion = (float)reader.GetDecimal(3);
-            model.Price = (float)reader.GetDecimal(4);
+            model.Completion = Math.Round((float)reader.GetDecimal(3), 2);
+            model.Price = Math.Round((float)reader.GetDecimal(4), 2);
             model.Publisher = reader.GetString(5);
             model.PicturePath = reader.GetString(6);
             return model;
