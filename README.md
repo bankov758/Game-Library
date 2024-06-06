@@ -11,7 +11,9 @@ Additionally, users can connect with friends, compare gaming statistics, and sha
 
 ### User Authentication
 - **Registration**: New users can register by providing a username, email, and password.
+- ![image](https://github.com/bankov758/Game-Library/assets/74242831/4abe9b25-880c-4d2e-bd38-a5c3a6aede5a)
 - **Login**: Existing users can log in using their credentials.
+- ![image](https://github.com/bankov758/Game-Library/assets/74242831/c903852f-72b7-4482-bd99-1676e6d5d217)
 
 ### Game Library Management
 - **Add Games**: Users can add new games to their library, including title, description, genre, release date, and images.
